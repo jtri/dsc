@@ -162,7 +162,7 @@ Configuration GatewayConfig
 		{
 			# This may be entire unnecessary	
 			Ensure = "Present"
-			Name = "NET-WCF-TCP-PortSharing"
+			Name = "NET-WCF-TCP-PortSharing45"
 		}
 
 		WindowsFeature SMB_FS_SMB1
