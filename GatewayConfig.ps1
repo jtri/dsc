@@ -162,13 +162,13 @@ Configuration GatewayConfig
 		{
 			# This may be entire unnecessary	
 			Ensure = "Present"
-			Name = "Net-WCF-TCP-PortSharing"
+			Name = "NET-WCF-TCP-PortSharing"
 		}
 
 		WindowsFeature SMB_FS_SMB1
 		{
 			Ensure = "Present"
-			Name = "FS_SMB1"
+			Name = "FS-SMB1"
 		}
 
 		WindowsFeature WindowsPowerShell_PowerShellRoot
