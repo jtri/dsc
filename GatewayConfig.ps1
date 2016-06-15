@@ -20,7 +20,8 @@ Configuration GatewayConfig
 	Import-DscResource -ModuleName PSDesiredStateConfiguration
 	Import-DscResource -ModuleName cChoco
 	Import-DscResource -ModuleName xSQLServer
-	Import-DscResource -ModuleName OctopusProjectsDSC
+	Import-DscResource -ModuleName OctopusDSC
+#Import-DscResource -ModuleName OctopusProjectsDSC
 
 	Node $env:computername
 	{
@@ -251,7 +252,7 @@ Configuration GatewayConfig
 			ListenPort = $ListenPort
 			DefaultApplicationDirectory = $DefaultApplicationDirectory
 
-			DependsOn = "[CChocoPackageInstaller]InstallJRE"
+			DependsOn = "[cChocoPackageInstaller]InstallJRE"
 		}
 
 		xSQLServerLogin CreateDefaultLogin
@@ -297,7 +298,7 @@ Configuration GatewayConfig
 			DependsOn = "[cChocoPackageInstaller]InstallSqlServer"
 		}
 	}
-}
+}#>
 
 function Install-NugetProvider
 {
@@ -373,7 +374,7 @@ function Install-DSCModules
 {
 	param
 	(
-	 	[String[]] $desired = @('xSQLServer', 'cChoco', 'OctopusProjectsDSC')
+	 	[String[]] $desired = @('xSQLServer', 'cChoco')
 	)
 	$installed = @()
 	Get-DscResource | ForEach-Object {
@@ -387,6 +388,15 @@ function Install-DSCModules
 	}
 }
 
+function GitClone-OctopusDSC
+{
+	$psmodulepath = $env:PSModulePath.Split(';')
+	$psmodulepath = $psmodulepath -like "*Program Files*"
+	& 'git clone https://github.com/OctopusDeploy/OctopusDSC.git $psmodulepath\OctopusDSC'
+	& rmdir $psmodule\OctopusDSC\.git /s/q
+	& del $psmodule\OctopusDSC\.gitignore
+}
+
 $packageManagementUrl = '/en-us/download/confirmation.aspx?id=51451&6B49FDFB-8E5B-4B07-BC31-15695C5A2143=1'
 
 $oldVerbose = $VerbosePreference
@@ -398,5 +408,6 @@ Is-NugetProviderInstalled
 Import-Module PowerShellGet -Verbose
 Install-DSCModules
 GatewayConfig
+GitClone-OctopusDSC
 
 $VerbosePreference = $oldVerbose
