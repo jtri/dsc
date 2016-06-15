@@ -17,7 +17,6 @@ Configuration GatewayConfig
 		[String] $DefaultApplicationDirectory
 	)
 
-	Install-DSCModules
 	Import-DscResource -Module cChoco
 	Import-DscResource -Module xSQLServer
 	Import-DscResource -Module OctopusDSC
@@ -396,6 +395,8 @@ $VerbosePreference = "continue"
 
 Is-ChocolateyInstalled
 Is-WmfInstalled
+Is-NugetProviderInstalled
+Install-DSCModules
 GatewayConfig
 
 $VerbosePreference = $oldVerbose
