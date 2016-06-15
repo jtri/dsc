@@ -7,13 +7,21 @@ Configuration GatewayConfig
 		[String] $Database = 'TestDB',
 #		[Parameter(Mandatory)]
 		[String] $LoginName = 'TestLogin',
-		[String] $LoginType = 'SqlLogin'
+		[String] $LoginType = 'SqlLogin',
+		[String] $TentacleName = 'Tentacle',
+		[String] $ApiKey = 'some-api-key',
+		[String] $OctopusServerUrl = '',
+		[String] $Environments,
+		[String] $Roles,
+		[String] $ListenPort,
+		[String] $DefaultApplicationDirectory
 	)
 
 	Install-DSCModules
 	Import-DscResource -Module cChoco
 	Import-DscResource -Module xSQLServer
-	
+	Import-DscResource -Module OctopusDSC
+
 	Node $env:computername
 	{
 		WindowsFeature IISWeb_Server
@@ -216,9 +224,34 @@ Configuration GatewayConfig
 
 		cChocoPackageInstaller InstallSqlServer
 		{
-			Ensure = "Present"
 			Name = "mssqlserver2014express"
 			Params = "/Q /ACTION=install"
+		}
+
+		cChocoPackageInstaller InstallJRE
+		{
+			Name = "jre8"	
+		}
+
+		cTentacleAgent OctopusTentacle
+		{
+			Ensure = "Present"
+			State = "Started"
+
+			# Change name if more than one Tentacle instance
+			Name = "Tentacle"
+
+			# Registration -- required
+			ApiKey = $ApiKey
+			OctopusServerUrl = $OctopusServerUrl
+			Environments = $Environments
+			Roles = $Roles
+
+			# Optional
+			ListenPort = $ListenPort
+			DefaultApplicationDirectory = $DefaultApplicationDirectory
+
+			DependsOn = "[CChocoPackageInstaller]InstallJRE"
 		}
 
 		xSQLServerLogin CreateDefaultLogin
@@ -340,7 +373,7 @@ function Install-DSCModules
 {
 	param
 	(
-	 	[String[]] $desired = @('xSQLServer', 'cChoco')
+	 	[String[]] $desired = @('xSQLServer', 'cChoco', 'OctopusProjectsDSC')
 	)
 	$installed = @()
 	Get-DscResource | ForEach-Object {
@@ -358,6 +391,8 @@ $packageManagementUrl = '/en-us/download/confirmation.aspx?id=51451&6B49FDFB-8E5
 
 $oldVerbose = $VerbosePreference
 $VerbosePreference = "continue"
+
+
 
 Is-ChocolateyInstalled
 Is-WmfInstalled
