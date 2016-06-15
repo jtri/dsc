@@ -1,8 +1,19 @@
 Configuration GatewayConfig
 {
+	param
+	(
+	 	[String] $Instance = 'SQLEXPRESS',
+		[Parameter(Mandatory)]
+		[String] $Database,
+		[Parameter(Mandatory)]
+		[String] $LoginName,
+		[String] $LoginType = 'SqlLogin'
+	)
+
 	Install-DSCModules
 	Import-DscResource -Module cChoco
 	Import-DscResource -Module xSQLServer
+	
 	Node $env:computername
 	{
 		WindowsFeature IISWeb_Server
