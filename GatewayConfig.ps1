@@ -303,7 +303,7 @@ function Install-NugetProvider
 {
 	param
 	(
-	 	[Stirng] $Version = '2.8.201'
+	 	[String] $Version = '2.8.201'
 	)
 	Write-Verbose 'Installing NuGet package management.'
 	Install-PackageProvider NuGet -MinimumVersion $Version -Force
@@ -330,8 +330,8 @@ function Remove-OldNugetProvider
 
 function Is-NugetProviderInstalled
 {
-	if ((-not (Test-Path "$env:ProgramFiles\PackageManagement\ProviderAssemblies\nuget"))
-	     -and
+	if ((-not (Test-Path "$env:ProgramFiles\PackageManagement\ProviderAssemblies\nuget")) `
+	     -and `
 	     (-not (Test-Path "$env:LOCALAPPDATA\PackageManagement\ProviderAssemblies\nuget")))
 	{
 		Write-Verbose 'NuGet package management not found.'
@@ -382,7 +382,7 @@ function Install-DSCModules
 
 	foreach ($item in $desired) {
 		if (-not $installed.Contains($item)) {
-			Install-Module -Name $item
+			Install-Module -Name $item -Force
 		}
 	}
 }
