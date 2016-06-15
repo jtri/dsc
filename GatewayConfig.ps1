@@ -17,9 +17,10 @@ Configuration GatewayConfig
 		[String] $DefaultApplicationDirectory
 	)
 
-	Import-DscResource -Module cChoco
-	Import-DscResource -Module xSQLServer
-	Import-DscResource -Module OctopusDSC
+	Import-DscResource -ModuleName PSDesiredStateConfiguration
+	Import-DscResource -ModuleName cChoco
+	Import-DscResource -ModuleName xSQLServer
+	Import-DscResource -ModuleName OctopusProjectsDSC
 
 	Node $env:computername
 	{
