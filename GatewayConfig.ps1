@@ -293,12 +293,12 @@ Configuration GatewayConfig
 			InstanceName = $Instance
 			ProtocolName = "Tcp"
 			IsEnabled = $true
-			TCPDynamicPorts = ""
+			#TCPDynamicPorts = ""
 			RestartService = $true
 			DependsOn = "[cChocoPackageInstaller]InstallSqlServer"
 		}
 	}
-}#>
+}
 
 function Install-NugetProvider
 {
@@ -392,9 +392,18 @@ function GitClone-OctopusDSC
 {
 	$psmodulepath = $env:PSModulePath.Split(';')
 	$psmodulepath = $psmodulepath -like "*Program Files*"
-	& 'git clone https://github.com/OctopusDeploy/OctopusDSC.git $psmodulepath\OctopusDSC'
-	& rmdir $psmodule\OctopusDSC\.git /s/q
-	& del $psmodule\OctopusDSC\.gitignore
+	if (Test-Path "$psmodulepath\OctopusDSC") {
+		Remove-Item "$psmodulepath\OctopusDSC"
+	}
+
+	& 'git' 'clone' 'https://github.com/OctopusDeploy/OctopusDSC.git' '$psmodulepath\OctopusDSC'
+	
+	if (Test-Path "$psmodulepath\OctopusDSC\.git") {
+		Remove-Item "$psmodulepath\OctopusDSC\.git"
+	}
+	if (Test-path "$psmodulepath\OctopusDSC\.gitignore") {	
+		Remove-Item "$psmodulepath\OctopusDSC\.gitignore"
+	}
 }
 
 $packageManagementUrl = '/en-us/download/confirmation.aspx?id=51451&6B49FDFB-8E5B-4B07-BC31-15695C5A2143=1'
