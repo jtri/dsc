@@ -357,7 +357,7 @@ function Install-Wmf
 {
 	Write-Verbose 'Installing PowerShell 5.0'
 	$CMD = "$env:ChocolateyInstall\bin\cinst.exe"
-	& $CMD 'powershell -y'
+	& $CMD 'powershell' '-y'
 }
 
 function Is-WmfInstalled
