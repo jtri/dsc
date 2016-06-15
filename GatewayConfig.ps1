@@ -289,7 +289,7 @@ Configuration GatewayConfig
 
 		xSQLServerNetwork EnableTCP
 		{
-			SQLInstanceName = $Instance
+			InstanceName = $Instance
 			ProtocolName = "Tcp"
 			IsEnabled = $true
 			TCPDynamicPorts = ""
@@ -306,8 +306,8 @@ function Install-NugetProvider
 	 	[String] $Version = '2.8.201'
 	)
 	Write-Verbose 'Installing NuGet package management.'
-	Install-PackageProvider NuGet -MinimumVersion $Version -Force
-	Import-PackageProvider NuGet -MinimumVersion $Version -Force
+	Install-PackageProvider -Name NuGet -MinimumVersion $Version -Force
+	Import-PackageProvider -Name NuGet -MinimumVersion $Version -Force
 }
 
 function Remove-OldNugetProvider
@@ -382,7 +382,7 @@ function Install-DSCModules
 
 	foreach ($item in $desired) {
 		if (-not $installed.Contains($item)) {
-			Install-Module -Name $item -Force
+			Find-Module -Name $item | Install-Module -Name $item -Force
 		}
 	}
 }
@@ -392,11 +392,10 @@ $packageManagementUrl = '/en-us/download/confirmation.aspx?id=51451&6B49FDFB-8E5
 $oldVerbose = $VerbosePreference
 $VerbosePreference = "continue"
 
-
-
 Is-ChocolateyInstalled
 Is-WmfInstalled
 Is-NugetProviderInstalled
+Import-Module PowerShellGet -Verbose
 Install-DSCModules
 GatewayConfig
 
