@@ -3,9 +3,9 @@ Configuration GatewayConfig
 	param
 	(
 	 	[String] $Instance = 'SQLEXPRESS',
-		[Parameter(Mandatory)]
+#		[Parameter(Mandatory)]
 		[String] $Database,
-		[Parameter(Mandatory)]
+#		[Parameter(Mandatory)]
 		[String] $LoginName,
 		[String] $LoginType = 'SqlLogin'
 	)
