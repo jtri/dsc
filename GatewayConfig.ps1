@@ -1,5 +1,8 @@
 Configuration GatewayConfig
 {
+	Install-DSCModules
+	Import-DscResource -Module cChoco
+	Import-DscResource -Module xSQLServer
 	Node $env:computername
 	{
 		WindowsFeature IISWeb_Server
@@ -199,6 +202,106 @@ Configuration GatewayConfig
 			Ensure = "Present"
 			Name = "WoW64-Support"
 		}
+
+		cChocoPackageInstaller InstallSqlServer
+		{
+			Ensure = "Present"
+			Name = "mssqlserver2014express"
+			Params = "/Q /ACTION=install"
+		}
+
+		xSQLServerLogin CreateDefaultLogin
+		{
+			Ensure = "Present"
+			Name = $LoginName
+			LoginType = $LoginType
+			SQLInstanceName = $Instance
+			DependsOn = "[cChocoPackageInstaller]InstallSqlServer"
+		}
+
+
+		xSQLServerDatabase CreateDefaultDatabase
+		{
+			Ensure = "Present"
+			Database = $Database
+			SQLInstanceName = $Instance
+			DependsOn = "[xSQLServerLogin]CreateDefaultLogin"
+		}
+
+		xSQLServerDatabasePermissions AddDefaultPermissionSet
+		{
+			Database = $Database
+			Name = $LoginName
+			Permissions = @("CreateTable",
+					"Insert",
+					"Delete",
+					"Update",
+					"Select",
+				       	"Connect",
+					"References")
+			SQLInstanceName = $Instance
+			DependsOn = "[xSQLServerDatabase]CreateDefaultDatabase"
+		}
+
+		xSQLServerNetwork EnableTCP
+		{
+			SQLInstanceName = $Instance
+			ProtocolName = "Tcp"
+			IsEnabled = $true
+			TCPDynamicPorts = ""
+			RestartService = $true
+			DependsOn = "[cChocoPackageInstaller]InstallSqlServer"
+		}
 	}
 }
+
+function Install-Chocolatey
+{
+	Write-Verbose 'Installing chocolatey'
+	iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1')
+}
+
+function Is-ChocolateyInstalled
+{
+	if (-not Test-Path $env:ChocolateyInstall) {
+		Write-Verbose 'Chocolatey not found.'
+		Install-Chocolatey
+	}
+}
+
+function Install-Wmf
+{
+	Write-Verbose 'Installing PowerShell 5.0'
+	$CMD = "$env:ChocolateyInstall\bin\cinst.exe"
+	& $CMD 'powershell -y'
+}
+
+function Is-WmfInstalled
+{
+	if (-not Test-Path "$env:ChocolateyInstall\lib\PowerShell") {
+		Write-Verbose 'PowerShell 5.0 required but not found.'
+		Install-Wmf
+		Restart-Computer
+	}	
+}
+
+function Install-DSCModules
+{
+	param
+	(
+	 	[String[]] $desired = @('xSQLServer', 'cChoco')
+	)
+	$installed = @()
+	Get-DscResource | ForEach-Object {
+	  $installed += $_.Name	
+	}
+
+	for ($item in $desired) {
+		if (-not $installed.Contains($item)) {
+			Install-Module -Name $item
+		}
+	}
+}
+
+Is-ChocolateyInstalled
 GatewayConfig
