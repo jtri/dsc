@@ -46,7 +46,7 @@ function Install-DSCModules
 	)
 	$installed = @()
 	Get-DscResource | ForEach-Object {
-	  $installed += $_.Name	
+	  $installed += $_.Name
 	}
 
 	foreach ($item in $desired) {
@@ -83,19 +83,19 @@ function Is-WmfInstalled
 		Write-Verbose 'PowerShell 5.0 required but not found.'
 		Install-Wmf
 		Restart-Computer
-	}	
+	}
 }
 
 
-function GitClone-OctopusDSC
+function Get-OctopusDSC
 {
 	$psmodulepath = $env:PSModulePath.Split(';')
-	$psmodulepath = $psmodulepath -like "*Program Files*"
-	if (Test-Path "$psmodulepath\OctopusDSC") {
-		Remove-Item "$psmodulepath\OctopusDSC" -Recurse -Force
-	}
+	$psmodulepath = $psmodulepath -like "*\Program Files\*"
+	if (-not (Test-Path "$psmodulepath\OctopusDSC")) {
+		#Remove-Item "$psmodulepath\OctopusDSC" -Recurse -Force
+		& 'git' 'clone' 'https://github.com/OctopusDeploy/OctopusDSC.git' "$psmodulepath\OctopusDSC"
 
-	& 'git' 'clone' 'https://github.com/OctopusDeploy/OctopusDSC.git' '$psmodulepath\OctopusDSC'
+	}
 }
 
 $packageManagementUrl = '/en-us/download/confirmation.aspx?id=51451&6B49FDFB-8E5B-4B07-BC31-15695C5A2143=1'
