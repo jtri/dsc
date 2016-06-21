@@ -17,7 +17,7 @@ Configuration RegistryConfig
                 ValueName = $($pair.Name)
                 ValueData = $($pair.Value)
                 Force     = $true
-                Hex       = $true
+                #Hex       = $true
                 ValueType = 'Dword'
             }
             Registry "$($pair.Name)_64"
@@ -27,7 +27,7 @@ Configuration RegistryConfig
                 ValueName = $($pair.Name)
                 ValueData = $($pair.Value)
                 Force     = $true
-                Hex       = $true
+                #Hex       = $true
                 ValueType = 'Dword'
             }
     	}

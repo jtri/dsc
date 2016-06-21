@@ -2,7 +2,7 @@ $ConfigurationData = @{
     AllNodes = @(
         @{
             NodeName = "localhost"
-            Role = "Setup, Development"
+            Roles = "Setup, Development"
             <#  We should encrypt passwords normally
             CertificateFile = 'c:\PublicKeys\server1.cer'
                 http://go.microsoft.com/fwlink/?LinkId=393729
@@ -47,7 +47,7 @@ Configuration SqlServerExpressConfig
     Import-DscResource -ModuleName cChoco
 	Import-DscResource -ModuleName xSQLServer
 
-    Node $AllNodes.where{ $_.Role.Contains("Setup") }.NodeName
+    Node $AllNodes.Where({ $_.Roles.Contains("Setup") }).NodeName
     {
         cChocoInstaller InstallChoco
         {

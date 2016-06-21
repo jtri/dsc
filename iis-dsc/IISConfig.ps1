@@ -2,7 +2,7 @@ $ConfigurationData = @{
     AllNodes = @(
         @{
             NodeName = "localhost"
-            Role = "Setup, Development"
+            Roles = "Setup, Development"
             IISFeatures = @{
                 Enabled = @(
                     'Web-Server','Web-WebServer','Web-Default-Doc',
@@ -25,7 +25,7 @@ $ConfigurationData = @{
 Configuration IISConfig
 {
     Import-DscResource -ModuleName PSDesiredStateConfiguration
-    Node $AllNodes.where{ $_.Role.Contains("Setup") }.NodeName
+    Node $AllNodes.Where({ $_.Roles.Contains("Setup") }).NodeName
     {
         ForEach ($feature in $Node.IISFeatures.Enabled) {
             WindowsFeature "$($feature)"

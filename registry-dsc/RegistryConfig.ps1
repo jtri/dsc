@@ -2,7 +2,7 @@ $ConfigurationData = @{
     AllNodes = @(
         @{
             NodeName = "localhost"
-            Role = "Setup, Development"
+            Roles = "Setup, Development"
             RegistryValues = @{
                 'key1'  = 'val1';
                 'key2'  = 'val2';
@@ -29,7 +29,7 @@ Configuration RegistryConfig
 {
     Import-DscResource -ModuleName PSDesiredStateConfiguration
 
-    Node $AllNodes.where{ $_.Role.Contains("Setup") }.NodeName
+    Node $AllNodes.Where({ $_.Roles.Contains("Setup") }).NodeName
     {
         ForEach ($pair in $Node.RegistryValues.GetEnumerator()) {
         	if ($Node.DWordValues -contains $($pair.Name)) {
